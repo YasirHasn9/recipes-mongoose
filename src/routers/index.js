@@ -4,13 +4,10 @@ const db = require("../../db/schema");
 
 router.get("/", async (req, res) => {
 	try {
-		const recipes = await db.find();
-		res.send({
-			recipes: recipes,
-		});
+		const result = await db.find();
+		res.send(result);
 	} catch (err) {
-		res.send({ err: err });
+		console.log(err);
 	}
 });
-
 module.exports = router;
