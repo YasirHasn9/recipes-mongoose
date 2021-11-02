@@ -10,4 +10,16 @@ router.get("/", async (req, res) => {
 		console.log(err);
 	}
 });
+
+router.get("/recipeNames", async (req, res) => {
+	try {
+		const result = await db.find();
+		const recipeNames = await result.map(r => r.name);
+		res.send({
+			recipeNames: recipeNames,
+		});
+	} catch (err) {
+		console.log(err);
+	}
+});
 module.exports = router;
