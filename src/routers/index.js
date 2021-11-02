@@ -23,7 +23,7 @@ router.get("/names", async (req, res) => {
 	}
 });
 
-router.get("/:name", async (req, res) => {
+router.get("/details/:name", async (req, res) => {
 	const { name } = req.params;
 	try {
 		const recipes = await db.find();
@@ -43,4 +43,19 @@ router.get("/:name", async (req, res) => {
 		res.send("err", err);
 	}
 });
+
+router.get("/:id", async (req, res) => {
+	try {
+		const recipe = await db.findOne({
+			_id: req.params.id,
+		});
+		res.send({
+			recipe,
+		});
+	} catch (err) {
+		res.status(404);
+		res.send({ error: "Post doesn't exist!" });
+	}
+});
+
 module.exports = router;
