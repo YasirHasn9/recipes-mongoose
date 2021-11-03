@@ -93,5 +93,28 @@ router.post("/", async (req, res) => {
 	}
 });
 
+router.put("/:id", async (req, res) => {
+	// find a recipe by id
+	try {
+		const existedRecipe = await db.findOne({ _id: req.params.id });
+		const { name, ingredients, instructions } = req.body;
+		if (name) {
+			existedRecipe.name = name;
+		}
+		if (ingredients) {
+			existedRecipe.ingredients = ingredients;
+		}
+		if (instructions) {
+			existedRecipe.instructions = instructions;
+		}
+		await existedRecipe.save();
+		res.status(200).json(existedRecipe);
+	} catch (err) {
+		res.status(500).json(err.message);
+	}
+	// check if we have in the db
+	// edit it
+	// send it over to the db to save it.
+});
 // to make the server request-able by other modules, we export it.
 module.exports = router;
