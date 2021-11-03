@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
 		const result = await db.find();
 		res.send(result);
 	} catch (err) {
-		res.status(500).json(err);
+		res.status(500).json(err.message);
 	}
 });
 
@@ -24,7 +24,7 @@ router.get("/names", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
-		res.status(500).json(err);
+		res.status(500).json(err.message);
 	}
 });
 
@@ -45,7 +45,7 @@ router.get("/details/:name", async (req, res) => {
 			}
 		}
 	} catch (err) {
-		res.status(500).json("err", err);
+		res.status(500).json(err.message);
 	}
 });
 
@@ -58,7 +58,7 @@ router.get("/:id", async (req, res) => {
 			recipe,
 		});
 	} catch (err) {
-		res.status(404).json({ error: "Post doesn't exist!" });
+		res.status(404).json(err.message);
 	}
 });
 
@@ -89,8 +89,9 @@ router.post("/", async (req, res) => {
 			}
 		}
 	} catch (err) {
-		res.status(500).json("Err", err);
+		res.status(500).json("Err", err.message);
 	}
 });
+
 // to make the server request-able by other modules, we export it.
 module.exports = router;
