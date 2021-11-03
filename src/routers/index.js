@@ -116,5 +116,16 @@ router.put("/:id", async (req, res) => {
 	// edit it
 	// send it over to the db to save it.
 });
+
+router.delete("/:id", async (req, res) => {
+	try {
+		// find it
+		// delete
+		await db.deleteOne({ _id: req.params.id });
+		res.status(200).json("recipe been deleted");
+	} catch (err) {
+		res.status(500).json(err.message);
+	}
+});
 // to make the server request-able by other modules, we export it.
 module.exports = router;
