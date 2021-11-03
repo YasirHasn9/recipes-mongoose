@@ -6,6 +6,12 @@ const recipesRouter = require("./routers/index");
 
 const server = express();
 
+// by default express, cant read request.body
+// it cant parse these requests, this is why it needs
+// to be told how to parse them
+server.use(express.json()); // this invocation teaches the express how
+// to get the req.body as json
+
 // parse the request resource
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
