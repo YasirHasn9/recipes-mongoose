@@ -59,3 +59,5 @@ app.get("/" , async (req, res, next) => {
 Express would not catch the errors in async operation unless we call next()
 Promises automatically catch both synchronous errors and rejected promises, then use next()
 Make sure we add the default error handling at the end
+
+HTTP Status cheatsheet [https://devhints.io/http-status]
