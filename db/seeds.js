@@ -47,6 +47,7 @@ const recipes = [
 		],
 	}),
 ];
+
 mongoose
 	.connect(uri, { useNewUrlParser: true })
 	.catch(err => {
@@ -56,6 +57,7 @@ mongoose
 	.then(() => {
 		console.log("connected to db in development environment");
 	});
+
 recipes.map(async (r, index) => {
 	await r.save((err, res) => {
 		if (index === recipes.length - 1) {
