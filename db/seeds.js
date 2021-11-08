@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
-const Recipes = require("./schema");
+const RecipesDb = require("./schema");
 const uri = process.env.URI;
 
 const recipes = [
-	new Recipes({
-		name: "scrambledEggs",
+	new RecipesDb({
+		name: "",
 		ingredients: ["1 tsp oil", "2 eggs", "salt"],
 		instructions: [
 			"Beat eggs with salt",
@@ -14,7 +14,7 @@ const recipes = [
 			"Salt to taste and enjoy",
 		],
 	}),
-	new Recipes({
+	new RecipesDb({
 		name: "garlicPasta",
 		ingredients: [
 			"500mL water",
@@ -31,7 +31,7 @@ const recipes = [
 			"Salt to taste and enjoy",
 		],
 	}),
-	new Recipes({
+	new RecipesDb({
 		name: "chai",
 		ingredients: [
 			"400mL water",
@@ -60,9 +60,13 @@ mongoose
 
 recipes.map(async (r, index) => {
 	await r.save((err, res) => {
-		if (index === recipes.length - 1) {
-			console.log("DONE!");
-			mongoose.disconnect();
+		if (err) {
+			return err;
+		} else {
+			if (index === recipes.length - 1) {
+				console.log("DONE!");
+				mongoose.disconnect();
+			}
 		}
 	});
 });
