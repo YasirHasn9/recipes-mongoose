@@ -80,6 +80,32 @@ router.post("/", checkNewRecipeBody, async (req, res, next) => {
 	}
 });
 
+router.put(
+	"/:id",
+	checkRecipeId,
+	checkNewRecipeBody,
+	async (req, res, next) => {
+		// first find the recipe by its id
+		// edit
+		// send it back to the db
+		try {
+			const recipe = req.recipe;
+			recipe.name = req.body.name;
+			recipe.ingredients = req.body.ingredients;
+			recipe.instructions = req.body.instructions;
+			console.log("This is the new recipe", recipe);
+			await recipe.save((err, recipe) => {
+				if (!err) {
+					res.status(201).json({
+						message: "Recipe is updated",
+					});
+				}
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+);
 router.delete("/", async (req, res, next) => {
 	try {
 		await RecipesDb.deleteMany();
