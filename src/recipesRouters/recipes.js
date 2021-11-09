@@ -93,7 +93,6 @@ router.put(
 			recipe.name = req.body.name;
 			recipe.ingredients = req.body.ingredients;
 			recipe.instructions = req.body.instructions;
-			console.log("This is the new recipe", recipe);
 			await recipe.save((err, recipe) => {
 				if (!err) {
 					res.status(201).json({
@@ -106,11 +105,15 @@ router.put(
 		}
 	}
 );
-router.delete("/", async (req, res, next) => {
+
+router.delete("/:id", checkRecipeId, async (req, res, next) => {
 	try {
-		await RecipesDb.deleteMany();
-		res.status(200).json({
-			message: "Recipes are deleted",
+		const recipe = req.recipe;
+		const { id } = recipe;
+		console.log(`This a deleted recipe`, id);
+		await RecipesDb.deleteOne({ _id: id });
+		res.status(202).json({
+			message: "Recipe is deleted",
 		});
 	} catch (err) {
 		next(err);
