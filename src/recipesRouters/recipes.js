@@ -53,21 +53,39 @@ router.post("/", checkNewRecipeBody, async (req, res, next) => {
 		instructions: req.body.instructions,
 	});
 	try {
-		const isCreated = await RecipesDb.find();
-		console.log("check it there", isCreated);
-		const isCreatedThere = isCreated.findIndex(r => r.name === newRecipe.name);
-		console.log(
-			`check if the recipe is already existed in the database`,
-			isCreatedThere
+		const recipes = await RecipesDb.find();
+		const isNewCreatedRecipeExisted = await recipes.findIndex(
+			r => r.name === newRecipe.name
 		);
-
-		if (isCreatedThere > -1) {
+		if (isNewCreatedRecipeExisted > -1) {
 			res.status(406).json({
 				message: "Recipe is existed",
 			});
 		} else {
-			res.status(200).json({ msg: "work" });
+			await newRecipe.save((err, recipe) => {
+				if (!recipe) {
+					return next({
+						status: 406,
+						message: "Fields must be validated",
+					});
+				} else {
+					res.status(201).json({
+						message: "New Recipe is created",
+					});
+				}
+			});
 		}
+	} catch (err) {
+		next(err);
+	}
+});
+
+router.delete("/", async (req, res, next) => {
+	try {
+		await RecipesDb.deleteMany();
+		res.status(200).json({
+			message: "Recipes are deleted",
+		});
 	} catch (err) {
 		next(err);
 	}

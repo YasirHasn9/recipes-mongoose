@@ -1,13 +1,4 @@
-const mongoose = require("mongoose");
 const RecipesDb = require("../../db/schema");
-const { body, validationResult } = require("express-validation");
-
-// const bodyValidation = {
-// 	body: Joi.object({
-// 		name: Joi.string().required(),
-// 		ingredients:
-// 	})
-// };
 
 module.exports = {
 	checkRecipeId,
@@ -16,7 +7,6 @@ module.exports = {
 
 function checkRecipeId(req, res, next) {
 	const { id } = req.params;
-	console.log("did it find ?", mongoose.isValidObjectId(id + "ee"));
 	// 1. mongoose executed the query -> first parameter
 	// 2. pass the result to the callback function --> second parameter
 	// note /* all the callbacks in mongoose is callback(err , result)

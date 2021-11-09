@@ -147,3 +147,11 @@ seeds.map(async (r, index) => {
 ```
 
 now, you have seeds in your database
+
+#### ---------------------------------
+
+#### Validation
+
+we can have our collection validated while designing our schema type.
+It works in `pre('save')` mood, it means that it makes sure it is validated before saving in the server.
+Validation is async recursive, when calling model#save, a sub-document of validation is executed. It Error occurs, the callback function in model#save will receive it.
