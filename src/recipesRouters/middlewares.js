@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 const RecipesDb = require("../../db/schema");
+const { body, validationResult } = require("express-validation");
+
+// const bodyValidation = {
+// 	body: Joi.object({
+// 		name: Joi.string().required(),
+// 		ingredients:
+// 	})
+// };
 
 module.exports = {
 	checkRecipeId,

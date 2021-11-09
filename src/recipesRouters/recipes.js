@@ -1,12 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const recipesDb = require("../../db/schema");
-const { checkRecipeId } = require("./middlewares");
+const RecipesDb = require("../../db/schema");
+const { checkRecipeId, checkNewRecipeBody } = require("./middlewares");
 router.get("/", async (req, res, next) => {
 	try {
-		const recipes = await recipesDb.find();
-		if (recipes) {
+		const recipes = await RecipesDb.find();
+		if (recipes.length > 0) {
 			res.status(200).json(recipes);
+		} else {
+			res.status(200).json({
+				message: `You need to create Recipes`,
+			});
+			next({});
 		}
 	} catch (err) {
 		next(err);
@@ -19,7 +24,7 @@ router.get("/", async (req, res, next) => {
 // coming after the "?" in url
 router.get("/names", async (req, res, next) => {
 	try {
-		const recipes = await recipesDb.find();
+		const recipes = await RecipesDb.find();
 		const recipeNames = recipes.map(r => r.name);
 		res.send({
 			recipeNames: recipeNames,
@@ -32,84 +37,42 @@ router.get("/names", async (req, res, next) => {
 // since I use the ':' after the '/', which that is gonna make it an 'id'
 // we can the from the request under the ['params'] property
 
-router.get("/:id", checkRecipeId, async (req, res, next) => {
-	const recipe = req.recipe;
-	res.send(recipe);
+router.get("/:id", checkRecipeId, (req, res, next) => {
+	try {
+		const recipe = req.recipe;
+		res.status(200).send(recipe);
+	} catch (err) {
+		next(err);
+	}
 });
 
-router.post("/", async (req, res, next) => {
-	// check if the client input all the required fields
+router.post("/", checkNewRecipeBody, async (req, res, next) => {
+	const newRecipe = new RecipesDb({
+		name: req.body.name,
+		ingredients: req.body.ingredients,
+		instructions: req.body.instructions,
+	});
 	try {
-		if (!req.body.name || req.body.ingredients || req.body.instructions) {
-			res.status(400).json({
-				message: "All the fields must be required",
+		const isCreated = await RecipesDb.find();
+		console.log("check it there", isCreated);
+		const isCreatedThere = isCreated.findIndex(r => r.name === newRecipe.name);
+		console.log(
+			`check if the recipe is already existed in the database`,
+			isCreatedThere
+		);
+
+		if (isCreatedThere > -1) {
+			res.status(406).json({
+				message: "Recipe is existed",
 			});
 		} else {
-			// create a new recipe
-			const recipe = new recipesDb({
-				name: req.body.name,
-				ingredients: req.body.ingredients,
-				instructions: req.body.instructions,
-			});
-			// check if the db had it
-			const existedRecipe = await recipesDb.findOne({ name: recipe.name });
-			if (existedRecipe) {
-				res.status(400).json({
-					error: "Recipe already exists",
-				});
-			} else {
-				// save the new recipe
-				await recipe.save();
-				res.status(201);
-			}
+			res.status(200).json({ msg: "work" });
 		}
 	} catch (err) {
 		next(err);
 	}
 });
 
-// router.put("/:id", async (req, res, next) => {
-// 	// find a recipe by id
-// 	try {
-// 		const existedRecipe = await db.findOne({ _id: req.params.id });
-// 		const { name, ingredients, instructions } = req.body;
-// 		if (name) {
-// 			existedRecipe.name = name;
-// 		}
-// 		if (ingredients) {
-// 			existedRecipe.ingredients = ingredients;
-// 		}
-// 		if (instructions) {
-// 			existedRecipe.instructions = instructions;
-// 		}
-// 		await existedRecipe.save();
-// 		res.status(200).json(existedRecipe);
-// 	} catch (err) {
-// 		next(err);
-// 	}
-// });
-
-// // the value after the "/" is always gonna be string even if we pass
-// // a numeric value
-// router.delete("/:id", async (req, res, next) => {
-// 	try {
-// 		// find it
-// 		// delete
-// 		await db.deleteOne({ _id: req.params.id });
-// 		// to send to the client a successful no content, we use 204
-// 		res.status(200).json("recipe been deleted");
-// 	} catch (err) {
-// 		next(err);
-// 	}
-// });
-
-// error handling
-// router.use((err, req, res, next) => {
-// 	res.status(err.status || 500).json({
-// 		msg: err.message,
-// 		stack: err.stack,
-// 	});
-// });
 router.use((err, req, res, next) => {
 	res.status(err.status || 500).send({
 		customDevMessage: "There is something wrong with the recipes router",
