@@ -61,3 +61,89 @@ Promises automatically catch both synchronous errors and rejected promises, then
 Make sure we add the default error handling at the end
 
 HTTP Status cheatsheet [https://devhints.io/http-status]
+
+#### Create seeds in mongoose
+
+What is seeds ?
+Sometimes, we want a dumpy data just to make sure that our database works fine. It easier to to seed data and also it gives a sense of pride
+that created seeds successfully, it makes want to accomplish more.
+
+simply, seeds is data that have the same look as our schema.
+
+we architect our schema. It create a collection, this collection is a list of objects
+
+in `schema.js`
+
+```js
+const recipesSchema = mongoose.Schema({
+	name: {
+		type: String,
+		require: true,
+		trim: true,
+		lowercase: true,
+		minLength: 2,
+	},
+	ingredients: { type: [String], require: true, minLength: 1 },
+	instructions: { type: [String], require: true, minLength: 1 },
+});
+module.exports = mongoose.model("Recipes", recipesSchema);
+```
+
+Each object is a recipe. Recipe contains name, ingredients, and instructions
+
+`Recipe object`
+
+```js
+recipeObject = {
+	name: "name of the recipe",
+	ingredients: ["ingredient 1", "ingredient 2"],
+	instructions: ["step 1", "step 2"],
+};
+```
+
+It nice to split our code and make it modular, it makes easy to debug, and well
+structured.
+
+Now, let's create a new file called `dummyData.js`
+
+```js
+const RecipeDb = require("./schema")
+module.exports = [
+    new RecipeDb({
+        name: "name",
+        ingredients: ["ingredient 1", "ingredient 2"]
+        instructions: ["step 1" , "step 2"]
+    }),
+    ...,
+    ...
+]
+```
+
+In our seeds, we are gonna call the model we created in the our `schema.js`, and call the dummy data we are created in the `dummyData.js`
+
+```js
+const mongoose = require("mongoose");
+const seeds = require("./dummyData");
+const uri = process.env.URI;
+
+mongoose
+	.connect(uri, { useNewUrlParser: true })
+	.catch(err => {
+		console.log(err.stack);
+		process.exit(1);
+	})
+	.then(() => {
+		console.log("connected to db in development environment");
+	});
+
+seeds.map(async (r, index) => {
+	await r.save((err, res) => {
+		if (index === seeds.length - 1) {
+			console.log("DONE!");
+			mongoose.disconnect();
+		}
+	});
+});
+```
+
+now, you have seeds in your database
