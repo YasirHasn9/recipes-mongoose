@@ -18,10 +18,6 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
-// we can get some information through travelling our url,
-// Look, nodeJs allows to have access to the url and find something called query
-// query is a key/value-like, it behaves "key=value" that they are
-// coming after the "?" in url
 router.get("/names", async (req, res, next) => {
 	try {
 		const recipes = await RecipesDb.find();
@@ -34,6 +30,17 @@ router.get("/names", async (req, res, next) => {
 	}
 });
 
+// we can get some information through travelling our url,
+// Look, nodeJs allows to have access to the url and find something called query
+// query is a key/value-like, it behaves "key=value" that they are
+// coming after the "?" in url
+router.get("/details", (req, res, next) => {
+	const { query } = req.query;
+	console.log(`This is the ${query}`);
+	res.status(200).json({
+		message: "SUCCESS",
+	});
+});
 // since I use the ':' after the '/', which that is gonna make it an 'id'
 // we can the from the request under the ['params'] property
 
