@@ -2,7 +2,7 @@
 
 Build a restApi using mongoose and nodeJS
 
-### `There are some recommendation when to comes to design a RESTApi`
+### `There are some recommendation when it comes to design a RESTApi`
 
 1. Everything is a resource
 2. Each resource is accessible via a unique url
@@ -24,12 +24,12 @@ Build a restApi using mongoose and nodeJS
 There is 2 types of error
 
 1. Operation Error
-   which happen when the client asks for a wrong endpoint or something we dont have on our program
+   which happen when the client asks for a wrong endpoint or something we don't have on our program
 
 2. Programmer Error
    which happens when we coded poorly
 
-The cool part about that express has a default error handler for `synchronous` and `asynchronous` code.
+The cool part about it is that express has a default error handler for `synchronous` and `asynchronous` code.
 
 #### `Synchronous`
 
@@ -56,17 +56,17 @@ app.get("/" , async (req, res, next) => {
 })
 ```
 
-Express would not catch the errors in async operation unless we call next()
-Promises automatically catch both synchronous errors and rejected promises, then use next()
-Make sure we add the default error handling at the end
+Express would not catch the errors in async operation unless we call next(and pass the err here).
+Promises automatically catch both synchronous errors and rejected promises.
+Make sure we add the default error handling at the end.
 
 HTTP Status cheatsheet [https://devhints.io/http-status]
 
 #### Create seeds in mongoose
 
 What is seeds ?
-Sometimes, we want a dumpy data just to make sure that our database works fine. It easier to to seed data and also it gives a sense of pride
-that created seeds successfully, it makes want to accomplish more.
+Sometimes, we want a dumpy data just to make sure that our database works fine. It easier to see data and also it gives a sense of pride because we created seeds successfully, it makes want to accomplish more.
+So, in my opinion, it's useful and fun to create seeds
 
 simply, seeds is data that have the same look as our schema.
 
@@ -154,4 +154,52 @@ now, you have seeds in your database
 
 we can have our collection validated while designing our schema type.
 It works in `pre('save')` mood, it means that it makes sure it is validated before saving in the server.
-Validation is async recursive, when calling model#save, a sub-document of validation is executed. It Error occurs, the callback function in model#save will receive it.
+Validation is async recursive, when calling model#save, a sub-document of validation is executed. If Error occurs, the callback function in model#save will receive it.
+
+1. validation is in the schema types
+   schema type has a built-in validators `required`
+
+this is a built-in validator
+
+```js
+Mongoose.Schema({
+	title: {type: String, required:true}
+						--------------- we validated here
+})
+```
+
+2. it's a middleware, it's called in the pre("save") hook
+3. validators don't run in undefined
+4. it is asynchronously recursive
+5. we can customize it
+
+```js
+Mongoose.Schema({
+	names: {
+		// name should an array of strings
+		type: [String],
+		validate: {
+			validator: function (v) {
+				return v.length >= 5;
+			},
+			message: props => `${props.v} should have contained at least 5 name`,
+		},
+	},
+});
+```
+
+and also there Async Custom Validators
+
+```js
+	validate: {
+			validator: Promise.reject(new Error("something")),
+			message: props => `${props.v} should have contained at least 5 name`,
+		},
+```
+
+Mongoose execute a process called error casting.
+In the this process, what happen is before we run the validation, mongoose tries to coerce values
+to the schema type. IF the casting fails for a given path,
+error.errors object will contain the CastError message
+
+casting runs before validation

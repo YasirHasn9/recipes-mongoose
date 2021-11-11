@@ -10,7 +10,7 @@ const recipesSchema = mongoose.Schema({
 	ingredients: {
 		type: [String],
 		// mongoose provides several ways to validate collections
-		// this is the first way
+		// this is the first way is a built in validators
 		//where we embedded the validation inside the defined fields
 		validate: {
 			validator: function (val) {
